@@ -1,21 +1,19 @@
 require('dotenv').config();
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const Stripe = require('stripe');
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const app = express();
+const PORT = process.env.PORT || 4242; // default port
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Route to create a payment intent
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount } = req.body; // this is to showe amount in cents (e.g., $10 = 1000)
+  const { amount } = req.body;
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -30,4 +28,8 @@ app.post('/create-payment-intent', async (req, res) => {
   }
 });
 
-app.listen(4242, () => console.log('Server running on http://localhost:3000'));
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
